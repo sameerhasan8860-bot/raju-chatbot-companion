@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      tg_memories: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: number
+          project: string | null
+          search: unknown
+          telegram_id: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          id?: number
+          project?: string | null
+          search?: unknown
+          telegram_id: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: number
+          project?: string | null
+          search?: unknown
+          telegram_id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tg_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: number
+          role: string
+          telegram_id: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: number
+          role: string
+          telegram_id: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: number
+          role?: string
+          telegram_id?: number
+        }
+        Relationships: []
+      }
+      tg_updates: {
+        Row: {
+          created_at: string
+          update_id: number
+        }
+        Insert: {
+          created_at?: string
+          update_id: number
+        }
+        Update: {
+          created_at?: string
+          update_id?: number
+        }
+        Relationships: []
+      }
+      tg_users: {
+        Row: {
+          context_reset_at: string
+          created_at: string
+          first_name: string | null
+          model: string
+          telegram_id: number
+          updated_at: string
+          username: string | null
+          window_count: number
+          window_start: string
+        }
+        Insert: {
+          context_reset_at?: string
+          created_at?: string
+          first_name?: string | null
+          model?: string
+          telegram_id: number
+          updated_at?: string
+          username?: string | null
+          window_count?: number
+          window_start?: string
+        }
+        Update: {
+          context_reset_at?: string
+          created_at?: string
+          first_name?: string | null
+          model?: string
+          telegram_id?: number
+          updated_at?: string
+          username?: string | null
+          window_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
