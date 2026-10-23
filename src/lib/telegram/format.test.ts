@@ -4,8 +4,9 @@ import { toTelegramMessages, looksSensitive, TG_LIMIT } from "./format";
 describe("telegram formatting", () => {
   it("renders fenced code as pre/code with language and escapes HTML", () => {
     const [m] = toTelegramMessages("Here:\n```python\nif a < b and c > d:\n    print('&')\n```\nDone");
-    expect(m).toContain('<pre><code class="language-python">if a &lt; b and c &gt; d:\n    print(\'&amp;\')</code></pre>');
-    expect(m.startsWith("Here:")).toBe(true);
+    expect(m).toBeDefined();
+    expect(m!).toContain('<pre><code class="language-python">if a &lt; b and c &gt; d:\n    print(\'&amp;\')</code></pre>');
+    expect(m!.startsWith("Here:")).toBe(true);
   });
 
   it("splits long code into multiple complete code blocks under the limit", () => {

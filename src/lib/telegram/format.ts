@@ -31,7 +31,7 @@ export function parseSegments(md: string): Segment[] {
   let m: RegExpExecArray | null;
   while ((m = re.exec(md))) {
     if (m.index > last) out.push({ kind: "text", html: inline(md.slice(last, m.index)) });
-    out.push({ kind: "code", lang: m[1] || "", code: m[2].replace(/\n$/, "") });
+    out.push({ kind: "code", lang: m[1] || "", code: (m[2] ?? "").replace(/\n$/, "") });
     last = re.lastIndex;
   }
   if (last < md.length) out.push({ kind: "text", html: inline(md.slice(last)) });

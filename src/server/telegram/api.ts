@@ -1,8 +1,8 @@
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
 
 export async function tg(method: string, payload: Record<string, unknown>) {
-  const lk = process.env.LOVABLE_API_KEY;
-  const tk = process.env.TELEGRAM_API_KEY;
+  const lk = process.env["LOVABLE_API_KEY"];
+  const tk = process.env["TELEGRAM_API_KEY"];
   if (!lk || !tk) throw new Error("Telegram is not configured");
   const res = await fetch(`${GATEWAY_URL}/${method}`, {
     method: "POST",
@@ -28,7 +28,7 @@ export async function sendHtml(chatId: number, html: string) {
 }
 
 export async function webhookSecret(): Promise<string> {
-  const data = new TextEncoder().encode(`telegram-webhook:${process.env.TELEGRAM_API_KEY ?? ""}`);
+  const data = new TextEncoder().encode(`telegram-webhook:${process.env["TELEGRAM_API_KEY"] ?? ""}`);
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", data));
   let s = "";
   for (const b of hash) s += String.fromCharCode(b);

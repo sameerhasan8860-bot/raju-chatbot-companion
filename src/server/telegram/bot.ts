@@ -11,13 +11,14 @@ const RATE_MAX = 30;
 const SYSTEM = `You are a professional AI assistant on Telegram, as capable as ChatGPT, Claude or Codex, and an expert software engineer.
 - Reply in the user's language and tone (Hindi, Hinglish, English, etc.). Match their level: step-by-step for beginners, technical for experts.
 - Give the answer first, then useful explanation. No repetitive introductions. Ask a short question only when truly needed.
+- Be maximally helpful and direct: answer every question fully, explain how things work and how to build or do them step by step. Never give vague or evasive replies, never lecture, and never add unnecessary warnings or disclaimers.
 - Never invent facts, API keys, test results or features. Say clearly when unsure. Never claim code was executed.
 - ALWAYS put code in Markdown fenced blocks with a language tag (\`\`\`python). Explanations go outside code blocks.
 - For multi-file projects, label each file with its exact path on its own line (e.g. **src/main.py**) followed by its own code block. Include structure, dependencies, env vars, setup and run steps.
 - For debugging: name the root cause, explain the fix, give corrected code.
 - If an answer would be extremely long, split it into numbered parts without omitting code.
 - Use only simple Markdown: **bold**, *italic*, \`inline code\`, fenced code, bullet lists, links. No tables.
-- Refuse only genuinely harmful requests (malware, credential theft, unauthorized access) and offer a safe alternative.
+- Refuse only genuinely harmful requests (malware, credential theft, unauthorized access), keep the refusal to one short line, and immediately offer a safe alternative or the closest legal/ethical way to achieve the user's goal.
 - You may receive "Known facts about this user" from long-term memory. Use them naturally; never claim to remember anything not given to you.`;
 
 const HELP = `<b>Hi! I'm your AI assistant.</b>
@@ -50,8 +51,8 @@ async function send(chatId: number, md: string) {
 }
 
 async function command(db: SupabaseClient, user: User, chatId: number, text: string): Promise<boolean> {
-  const [cmdRaw, ...rest] = text.trim().split(/\s+/);
-  const cmd = cmdRaw.split("@")[0].toLowerCase();
+  const [cmdRaw = "", ...rest] = text.trim().split(/\s+/);
+  const cmd = (cmdRaw.split("@")[0] ?? "").toLowerCase();
   const arg = rest.join(" ").trim();
   const uid = user.telegram_id;
 
@@ -176,9 +177,11 @@ export async function handleUpdate(db: SupabaseClient, update: any, waitUntil: (
     let budget = 60000;
     const trimmed: ChatMsg[] = [];
     for (let i = history.length - 1; i >= 0; i--) {
-      budget -= history[i].content.length;
+      const h = history[i];
+      if (!h) break;
+      budget -= h.content.length;
       if (budget < 0) break;
-      trimmed.unshift(history[i]);
+      trimmed.unshift(h);
     }
     const messages: ChatMsg[] = [{ role: "system", content: SYSTEM }];
     if (memories.length) {
@@ -189,7 +192,7 @@ export async function handleUpdate(db: SupabaseClient, update: any, waitUntil: (
     await typing;
     let reply: string;
     try {
-      reply = (await chat(user.model || DEFAULT_MODEL, messages)).trim();
+      reply = (await chat(user.model ?? DEFAULT_MODEL, messages)).trim();
       if (!reply) reply = "I couldn't produce an answer for that. Could you rephrase or add a bit more detail?";
     } catch (e) {
       console.error("AI error", e);
