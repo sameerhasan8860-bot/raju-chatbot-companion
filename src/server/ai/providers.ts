@@ -18,11 +18,11 @@ const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 /** Streams a chat completion and returns the final text. */
 export async function chat(model: string, messages: ChatMsg[], opts: { json?: boolean } = {}): Promise<string> {
-  const key = process.env.LOVABLE_API_KEY;
+  const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new AIError(401, "AI is not configured on the server.");
   const body: Record<string, unknown> = { model, messages, stream: true };
-  if (opts.json) body.response_format = { type: "json_object" };
-  if (model.startsWith("openai/")) body.reasoning_effort = "none";
+  if (opts.json) body["response_format"] = { type: "json_object" };
+  if (model.startsWith("openai/")) body["reasoning_effort"] = "none";
 
   let res: Response | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
