@@ -51,8 +51,8 @@ async function send(chatId: number, md: string) {
 }
 
 async function command(db: SupabaseClient, user: User, chatId: number, text: string): Promise<boolean> {
-  const [cmdRaw, ...rest] = text.trim().split(/\s+/);
-  const cmd = cmdRaw.split("@")[0].toLowerCase();
+  const [cmdRaw = "", ...rest] = text.trim().split(/\s+/);
+  const cmd = (cmdRaw.split("@")[0] ?? "").toLowerCase();
   const arg = rest.join(" ").trim();
   const uid = user.telegram_id;
 
@@ -192,7 +192,7 @@ export async function handleUpdate(db: SupabaseClient, update: any, waitUntil: (
     await typing;
     let reply: string;
     try {
-      reply = (await chat(user.model || DEFAULT_MODEL, messages)).trim();
+      reply = (await chat(user.model ?? DEFAULT_MODEL, messages)).trim();
       if (!reply) reply = "I couldn't produce an answer for that. Could you rephrase or add a bit more detail?";
     } catch (e) {
       console.error("AI error", e);
