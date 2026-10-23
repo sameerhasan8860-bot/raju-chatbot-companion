@@ -177,9 +177,11 @@ export async function handleUpdate(db: SupabaseClient, update: any, waitUntil: (
     let budget = 60000;
     const trimmed: ChatMsg[] = [];
     for (let i = history.length - 1; i >= 0; i--) {
-      budget -= history[i].content.length;
+      const h = history[i];
+      if (!h) break;
+      budget -= h.content.length;
       if (budget < 0) break;
-      trimmed.unshift(history[i]);
+      trimmed.unshift(h);
     }
     const messages: ChatMsg[] = [{ role: "system", content: SYSTEM }];
     if (memories.length) {
