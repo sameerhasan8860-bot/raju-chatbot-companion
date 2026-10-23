@@ -6,7 +6,7 @@ export const MODELS: Record<string, string> = {
   smart: "google/gemini-3.1-pro-preview",
   gpt: "openai/gpt-5.4-mini",
 };
-export const DEFAULT_MODEL = MODELS.fast;
+export const DEFAULT_MODEL = MODELS["fast"]!;
 
 export class AIError extends Error {
   constructor(public status: number, message: string) {
