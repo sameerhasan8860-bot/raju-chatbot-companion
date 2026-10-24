@@ -1,7 +1,7 @@
 // Fixed workflow, never accepted from AI output. No secrets or tokens enter the container.
 export const WORKFLOW_NAME = "telegram-sandbox.yml";
 export const WORKFLOW = `name: Telegram temporary test
-run-name: telegram-4{{ inputs.job_id }}
+run-name: telegram-${"$"}{{ inputs.job_id }}
 on:
   workflow_dispatch:
     inputs:
