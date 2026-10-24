@@ -3,6 +3,7 @@ import { chat, friendlyAIError, MODELS, DEFAULT_MODEL, type ChatMsg } from "../a
 import { toTelegramMessages, escapeHtml } from "@/lib/telegram/format";
 import { sendHtml, tg } from "./api";
 import { recallMemories, updateMemories } from "./memory";
+import { handleExecution } from "../execution/telegram";
 
 const HISTORY_LIMIT = 20;
 const RATE_WINDOW_MS = 10 * 60 * 1000;
@@ -150,6 +151,7 @@ export async function handleUpdate(db: SupabaseClient, update: any, waitUntil: (
     await sendHtml(chatId, "⚠️ My storage is temporarily unavailable. Please try again shortly.");
     return;
   }
+  if (await handleExecution(db, user.telegram_id, chatId, text, user.model)) return;
   if (text.startsWith("/") && (await command(db, user, chatId, text))) return;
 
   // Per-user rate limit
