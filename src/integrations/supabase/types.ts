@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      tg_jobs: {
+        Row: {
+          branch: string
+          commit_sha: string | null
+          conclusion: string | null
+          created_at: string
+          html_url: string | null
+          id: string
+          project_id: string
+          repository: string
+          run_id: number | null
+          status: string
+          telegram_id: number
+          updated_at: string
+        }
+        Insert: {
+          branch: string
+          commit_sha?: string | null
+          conclusion?: string | null
+          created_at?: string
+          html_url?: string | null
+          id?: string
+          project_id: string
+          repository: string
+          run_id?: number | null
+          status?: string
+          telegram_id: number
+          updated_at?: string
+        }
+        Update: {
+          branch?: string
+          commit_sha?: string | null
+          conclusion?: string | null
+          created_at?: string
+          html_url?: string | null
+          id?: string
+          project_id?: string
+          repository?: string
+          run_id?: number | null
+          status?: string
+          telegram_id?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tg_jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "tg_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tg_memories: {
         Row: {
           category: string
@@ -68,6 +121,36 @@ export type Database = {
           id?: number
           role?: string
           telegram_id?: number
+        }
+        Relationships: []
+      }
+      tg_projects: {
+        Row: {
+          created_at: string
+          files: Json
+          id: string
+          runtime: string
+          telegram_id: number
+          test_command: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          files: Json
+          id?: string
+          runtime: string
+          telegram_id: number
+          test_command: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          files?: Json
+          id?: string
+          runtime?: string
+          telegram_id?: number
+          test_command?: string
+          title?: string
         }
         Relationships: []
       }
