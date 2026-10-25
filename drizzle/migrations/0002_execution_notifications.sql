@@ -1,0 +1,1 @@
+ALTER TABLE public.tg_jobs ADD COLUMN notified_state text;

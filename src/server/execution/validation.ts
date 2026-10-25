@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { looksSensitive } from "@/lib/telegram/format";
 
 export const UUID = z.string().uuid();
 export const projectSchema = z.object({
@@ -20,18 +21,18 @@ export function validateProject(input: unknown): ProjectInput {
     if (seen.has(file.path)) throw new Error("Duplicate file path.");
     seen.add(file.path);
     size += file.content.length;
-    if (/gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{16,}|\b\d{8,10}:[A-Za-z0-9_-]{30,}|-----BEGIN.*PRIVATE KEY|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\./.test(file.content)) throw new Error("Remove real credentials from project files before testing.");
+    if (looksSensitive(file.content) || /gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{16,}|\b\d{8,10}:[A-Za-z0-9_-]{30,}|-----BEGIN.*PRIVATE KEY|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\./.test(file.content)) throw new Error("Remove real credentials from project files before testing.");
   }
   if (size > 150000) throw new Error("Project exceeds the temporary test size limit.");
   return p;
 }
 
 export function executionIntent(text: string): boolean {
-  return /^\/(execute|prepare|confirm|status|logs|cancel|rerun|hosting|execution)(?:@\w+)?(?:\s|$)/i.test(text);
+  return /^\/(execute|prepare|confirm|status|logs|cancel|rerun|fix|hosting|execution)(?:@\w+)?(?:\s|$)/i.test(text);
 }
 
 export function redact(text: string): string {
-  return text.replace(/gh[pousr]_[A-Za-z0-9]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9_-]+|\b\d{8,10}:[A-Za-z0-9_-]{30,}|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, "[REDACTED]");
+  return text.replace(/gh[pousr]_[A-Za-z0-9]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9_-]+|\b\d{8,10}:[A-Za-z0-9_-]{30,}|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+|-----BEGIN[^\n]*PRIVATE KEY-----[\s\S]*?-----END[^\n]*PRIVATE KEY-----|(?:postgres(?:ql)?|mongodb(?:\+srv)?):\/\/[^\s]+|((?:token|secret|password|api[_-]?key)\s*[=:]\s*)[^\s,;]+/gi, "[REDACTED]");
 }
 
 export function describeRun(run: { status: string; conclusion: string | null }): string {

@@ -4,6 +4,7 @@ import { toTelegramMessages, escapeHtml } from "@/lib/telegram/format";
 import { sendHtml, tg } from "./api";
 import { recallMemories, updateMemories } from "./memory";
 import { handleExecution } from "../execution/telegram";
+import { hasCode } from "../execution/conversation";
 
 const HISTORY_LIMIT = 20;
 const RATE_WINDOW_MS = 10 * 60 * 1000;
@@ -203,6 +204,7 @@ export async function handleUpdate(db: SupabaseClient, update: any, waitUntil: (
     }
     clearInterval(typingTimer);
     await send(chatId, reply);
+    if (hasCode(reply)) await sendHtml(chatId, "Would you like to test this project temporarily on GitHub? Reply ‘test karo’ or ‘test this project’ to prepare files for review. Nothing runs without your project-specific confirmation. For permanent hosting, use /hosting.");
 
     await db.from("tg_messages").insert([
       { telegram_id: uid, role: "user", content: text },

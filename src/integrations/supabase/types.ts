@@ -22,6 +22,7 @@ export type Database = {
           created_at: string
           html_url: string | null
           id: string
+          notified_state: string | null
           project_id: string
           repository: string
           run_id: number | null
@@ -36,6 +37,7 @@ export type Database = {
           created_at?: string
           html_url?: string | null
           id?: string
+          notified_state?: string | null
           project_id: string
           repository: string
           run_id?: number | null
@@ -50,6 +52,7 @@ export type Database = {
           created_at?: string
           html_url?: string | null
           id?: string
+          notified_state?: string | null
           project_id?: string
           repository?: string
           run_id?: number | null
