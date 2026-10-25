@@ -69,6 +69,18 @@ export async function commitProject(repo: string, base: string, branch: string, 
   return newCommit.sha;
 }
 
+export async function ensureEventHook(repo: string): Promise<void> {
+  const callback = process.env["GITHUB_EXECUTION_CALLBACK_URL"] ?? "https://project--df801af5-0cd0-4da5-a7f7-e07330c55d54-dev.lovable.app/api/public/github/execution";
+  const url = new URL(callback);
+  if (url.protocol !== "https:" || url.pathname !== "/api/public/github/execution" || !["project--df801af5-0cd0-4da5-a7f7-e07330c55d54-dev.lovable.app", "project--df801af5-0cd0-4da5-a7f7-e07330c55d54.lovable.app", "raju-chatbot-companion.lovable.app"].includes(url.hostname)) throw new Error("Owner must configure this application's HTTPS callback URL.");
+  const { eventSecret } = await import("./events");
+  const hooks = await github(`repos/${repo}/hooks?per_page=100`);
+  const existing = hooks.find((h: any) => h.config?.url === callback);
+  const config = { url: callback, content_type: "json", insecure_ssl: "0", secret: await eventSecret() };
+  if (existing) await github(`repos/${repo}/hooks/${existing.id}`, "PATCH", { active: true, events: ["workflow_run"], config });
+  else await github(`repos/${repo}/hooks`, "POST", { name: "web", active: true, events: ["workflow_run"], config });
+}
+
 export async function runLogs(repo: string, runId: number): Promise<string> {
   const jobs = await github(`repos/${repo}/actions/runs/${runId}/jobs`);
   const job = jobs.jobs?.find((j: any) => j.name === "test");
