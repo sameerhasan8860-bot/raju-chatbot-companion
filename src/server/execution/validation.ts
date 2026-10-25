@@ -14,7 +14,7 @@ export function validateProject(input: unknown): ProjectInput {
   const seen = new Set<string>();
   let size = 0;
   for (const file of p.files) {
-    if (!/^[A-Za-z0-9_.\/-]+$/.test(file.path) || file.path.startsWith("/") || file.path.split("/").some((part) => !part || part.startsWith(".")) || /^(Dockerfile|execution\.json)$/i.test(file.path)) {
+    if (!/^[A-Za-z0-9_.\/-]+$/.test(file.path) || file.path.startsWith("/") || file.path.split("/").some((part) => !part || part.startsWith(".")) || /^(Dockerfile|execution\.json|run-test\.sh)$/i.test(file.path)) {
       throw new Error("Unsafe file path: use ordinary project files, not hidden files or workflows.");
     }
     if (seen.has(file.path)) throw new Error("Duplicate file path.");
