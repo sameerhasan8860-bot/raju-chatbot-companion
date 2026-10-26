@@ -62,4 +62,13 @@ describe("Telegram execution authorization", () => {
     expect(mocks.ensure).not.toHaveBeenCalled();
     expect(mocks.send).toHaveBeenCalledWith(123, expect.stringContaining("expired"));
   });
+  it("natural-language requests only prepare owner-scoped review and never dispatch", async () => {
+    const { db, chain } = fakeDb({ content: "```python\nprint(2)\n```", id, title: "Test", runtime: "python", files: [{ path: "main.py", content: "print(2)" }], test_command: "python main.py" });
+    mocks.chat.mockResolvedValue(JSON.stringify({ title: "Test", runtime: "python", files: [{ path: "main.py", content: "print(2)" }], test_command: "python main.py" }));
+    await handleExecution(db, 456, 456, "test this project");
+    expect(chain.eq).toHaveBeenCalledWith("telegram_id", 456);
+    expect(chain.insert).toHaveBeenCalledWith(expect.objectContaining({ branch: expect.stringMatching(/^telegram-test\/456\//), status: "awaiting_confirmation" }));
+    expect(mocks.ensure).not.toHaveBeenCalled();
+    expect(mocks.github).not.toHaveBeenCalled();
+  });
 });
