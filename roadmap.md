@@ -1,4 +1,5 @@
 # GitHub Actions execution
+- [ ] Verify and configure the newly supplied sameerhasan8860-bot/Private-repo for execution.
 - [x] Add natural-language review of previously generated code, required configuration detection and approved fixes.
 - [x] Add verified GitHub event notifications without polling or credentials inside generated projects.
 - [x] Recheck the requested repository, run regression checks (25 passed), and document remaining live setup.
