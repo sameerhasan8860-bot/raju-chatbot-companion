@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { looksSensitive } from "@/lib/telegram/format";
+import { hasCredential } from "./conversation";
 
 export const UUID = z.string().uuid();
 export const projectSchema = z.object({
@@ -21,7 +21,7 @@ export function validateProject(input: unknown): ProjectInput {
     if (seen.has(file.path)) throw new Error("Duplicate file path.");
     seen.add(file.path);
     size += file.content.length;
-    if (looksSensitive(file.content) || /gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{16,}|\b\d{8,10}:[A-Za-z0-9_-]{30,}|-----BEGIN.*PRIVATE KEY|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\./.test(file.content)) throw new Error("Remove real credentials from project files before testing.");
+    if (hasCredential(file.content)) throw new Error("Remove real credentials from project files before testing.");
   }
   if (size > 150000) throw new Error("Project exceeds the temporary test size limit.");
   return p;
